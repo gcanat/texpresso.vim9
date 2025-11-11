@@ -1,0 +1,107 @@
+*texpresso.txt*				TeXpresso Plugin for Vim9
+
+
+Author: gcanat
+For Vim version 9.0 and above
+Last change: Nov 11, 2025
+
+==============================================================================
+CONTENTS					*texpresso-contents*
+
+     1. Overview ................................... |texpresso-overview|
+     2. Installation ............................... |texpresso-installation|
+     3. Usage ...................................... |texpresso-usage|
+     4. Configuration............................... |texpresso-configuration|
+     5. License .................................... |texpresso-license|
+
+==============================================================================
+1. Overview					*texpresso-overview*
+
+This plugin provides texpresso integration for Vim9.
+
+More information about texpresso here:
+
+    https://github.com/let-def/texpresso
+
+It is almost entirely based on the lua implementation for neovim:
+    https://github.com/let-def/texpresso.vim
+So all credits to the original author.
+
+Requirements:
+    - Vim version 9.0 and later
+    - texpresso installed
+
+The Github repository for this plugin is available at:
+
+    https://github.com/gcanat/texpresso.vim9
+
+==============================================================================
+2. Installation					*texpresso-installation*
+
+You can install this plugin directly from github using the following steps:
+
+    $ mkdir -p $HOME/.vim/pack/plugs/opt
+    $ cd $HOME/.vim/pack/plugs/opt
+    $ git clone https://github.com/gcanat/texpresso.vim9.git
+    $ vim -u NONE -c "helptags $HOME/.vim/pack/plugs/opt/texpresso/doc" -c q
+
+Otherwise, you can use any Vim plugin manager to install and manage this
+plugin.
+
+Uninstallation:
+    - If installed with a plugin manager: use its uninstall command.
+    - If installed manually: remove the $HOME/.vim/pack/plugs/texpresso
+      directory.
+
+Activation:
+To use this plugin, add the following line to your .vimrc file:
+
+    packadd texpresso.vim9
+
+==============================================================================
+3. Usage					*texpresso-usage*
+
+The following commands are provided:
+
+:TeXpresso		Launch the texpresso viewer with the supplied arguments.
+			Argument is expected to contain a filename or equivalent, eg %
+			It can also contain texpresso options, eg -I build/
+			However the last argument should be the filename.
+
+==============================================================================
+4. Configuration				*texpresso-configuration*
+
+At the moment there is only one configuration option, which is to provide the
+path to the texpresso binary: >
+    let g:texpresso_path = "/path/to/your/texpresso/binary"
+<
+
+If it is not specified it will simply be set to "texpresso".
+
+==============================================================================
+5. License						*texpresso-license*
+
+License: MIT License
+Copyright (c) 2020-2024 gcanat
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+==============================================================================
+
+vim:tw=78:ts=8:noet:ft=help:norl:
