@@ -1,8 +1,8 @@
-vim9script
-
 if !has('vim9script') ||  v:version < 900
   finish
 endif
+
+vim9script
 
 if get(g:, 'loaded_texpresso_vim9', false)
   finish

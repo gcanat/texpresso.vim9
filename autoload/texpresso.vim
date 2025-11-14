@@ -7,9 +7,6 @@ if !exists("g:texpresso_path")
   g:texpresso_path = "texpresso"
 endif
 
-# Logging
-var Logger: func = null_function
-
 # Cache last arguments
 var last_args: list<string> = []
 
@@ -19,8 +16,7 @@ var job_process: job = null_job
 var job_needs_resync: bool = false
 
 # Log output and problems
-var log: list<string> = []
-var fix: list<dict<any>> = []
+var qf_items: list<dict<any>> = []
 var fixcursor: number = 0
 
 # Log buffer ID
@@ -140,20 +136,21 @@ enddef
 
 # Shrink list to count elements
 def Shrink(tbl: list<any>, count: number)
-  while len(tbl) > count
-    remove(tbl, -1)
-  endwhile
+  if len(tbl) > count
+    tbl->remove(count, -1)
+  endif
 enddef
 
 # Expand list to count elements
 def Expand(tbl: list<any>, count: number, default: any)
-  while len(tbl) < count
-    add(tbl, default)
-  endwhile
+  if len(tbl) < count
+    var pad = [default]->repeat(count - len(tbl))
+    tbl->extend(pad)
+  endif
 enddef
 
 # Process message from TeXpresso
-def ProcessMessage(json: list<any>)
+def ProcessMessage(json: list<any>, log: list<any>)
   var msg = json[0]
 
   if msg ==# "reset-sync"
@@ -167,25 +164,23 @@ def ProcessMessage(json: list<any>)
       Shrink(log, count)
       Expand(log, count, "")
     elseif name ==# "out"
-      Expand(fix, count, {})
+      Expand(qf_items, count, {})
       fixcursor = count
     endif
   elseif msg ==# "append-lines"
     var name = json[1]
     if name ==# "log"
-      for i in range(2, len(json) - 1)
-        add(log, json[i])
-      endfor
+      extend(log, json[2 : len(json) - 1])
     elseif name ==# "out"
       for i in range(2, len(json) - 1)
+        qf_items[fixcursor] = FormatFix(json[i])
         fixcursor += 1
-        fix[fixcursor - 1] = FormatFix(json[i])
       endfor
-      timer_start(0, (_) => SetQf(fix))
+      timer_start(0, (_) => SetQf(qf_items))
     endif
   elseif msg ==# "flush"
-    Shrink(fix, fixcursor)
-    timer_start(0, (_) => SetQf(fix))
+    Shrink(qf_items, fixcursor)
+    timer_start(0, (_) => SetQf(qf_items))
   endif
 enddef
 
@@ -198,7 +193,7 @@ def Send(...args: list<any>)
 enddef
 
 # Reload buffer in TeXpresso
-export def Reload(buf: number)
+def Reload(buf: number)
   var path = fnamemodify(bufname(buf), ":p")
   Send("open", path, BufferGetLines(buf, 0, -1))
 enddef
@@ -272,6 +267,7 @@ export def Launch(...args: list<string>)
   endif
 
   var cmd = [g:texpresso_path, "-json", "-lines"]
+  var log: list<string> = []
 
   var use_args = empty(args) ? last_args : args
   # last arg should be filename, expand it to full path
@@ -294,7 +290,7 @@ export def Launch(...args: list<string>)
 
       try
         var data = json_decode(new_msg)
-        ProcessMessage(data)
+        ProcessMessage(data, log)
         job_queued = ""
       catch
         job_queued = new_msg
